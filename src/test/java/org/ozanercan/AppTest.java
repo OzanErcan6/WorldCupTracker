@@ -14,7 +14,7 @@ public class AppTest {
 
     @BeforeEach
     public void setUp() {
-        scoreboard = new Scoreboard();
+        scoreboard = new Scoreboard(new MatchService());
     }
 
     @Test
