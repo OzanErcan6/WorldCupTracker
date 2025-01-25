@@ -11,32 +11,6 @@ import java.util.List;
 public class AppTest {
 
     @Test
-    public void testEmptyScoreboardReturnsEmptySummary() {
-        Scoreboard scoreboard = new Scoreboard();
-        List<Match> summary = scoreboard.getSummary();
-        assertEquals(0, summary.size());
-    }
-
-    @Test
-    public void testScoreboardStartMatchBasic() {
-        Scoreboard scoreboard = new Scoreboard();
-        scoreboard.startMatch("Arsenal FC", "Ajax");
-        List<Match> summary = scoreboard.getSummary();
-        assertEquals(1, summary.size());
-    }
-
-    @Test
-    public void testScoreboardStartMatch() {
-        Scoreboard scoreboard = new Scoreboard();
-        scoreboard.startMatch("Arsenal FC", "Ajax");
-        List<Match> summary = scoreboard.getSummary();
-        assertEquals("Arsenal FC", summary.get(0).getHomeTeam());
-        assertEquals("Ajax", summary.get(0).getAwayTeam());
-        assertEquals(0, summary.get(0).getHomeScore());
-        assertEquals(0, summary.get(0).getAwayScore());
-    }
-
-    @Test
     public void testScoreboardStartMatchDuplicateValue() {
         Scoreboard scoreboard = new Scoreboard();
         scoreboard.startMatch("Arsenal FC", "Ajax");
@@ -56,35 +30,6 @@ public class AppTest {
         Scoreboard scoreboard = new Scoreboard();
         assertThrows(IllegalArgumentException.class,
                 () -> scoreboard.startMatch("Real Madrid", "Real Madrid"));
-    }
-
-    @Test
-    public void testScoreboardStartAndUpdateMatch() {
-        Scoreboard scoreboard = new Scoreboard();
-        scoreboard.startMatch("Arsenal FC", "Ajax");
-        scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2);
-        List<Match> summary = scoreboard.getSummary();
-        assertEquals(1, summary.get(0).getHomeScore());
-        assertEquals(2, summary.get(0).getAwayScore());
-    }
-
-    @Test
-    public void testScoreboardStartAndUpdateMatch2() {
-        Scoreboard scoreboard = new Scoreboard();
-
-        scoreboard.startMatch("Real Madrid", "Liverpool FC");
-        scoreboard.startMatch("Arsenal FC", "Ajax");
-
-        scoreboard.updateScore("Real Madrid", "Liverpool FC", 1, 2);
-        scoreboard.updateScore("Arsenal FC", "Ajax", 3, 2);
-        List<Match> summary = scoreboard.getSummary();
-
-        for (Match match : summary){
-            if(match.getHomeTeam().equals("Arsenal FC")){
-                assertEquals(3, match.getHomeScore());
-                assertEquals(2, match.getAwayScore());
-            }
-        }
     }
 
     @Test
@@ -184,4 +129,94 @@ public class AppTest {
         assertThrows(MatchNotFoundException.class,
                 () -> scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2));
     }
+
+    @Test
+    public void testScoreboardSummaryBasicCase() {
+        Scoreboard scoreboard = new Scoreboard();
+        scoreboard.startMatch("Arsenal FC", "Ajax");
+        scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2);
+        List<Match> summary = scoreboard.getSummary();
+        assertEquals(1, summary.size());
+        scoreboard.finishMatch("Arsenal FC", "Ajax");
+        assertEquals(0, summary.size());
+    }
+
+    @Test
+    public void testScoreboardSummaryBasicCase2() {
+        Scoreboard scoreboard = new Scoreboard();
+        scoreboard.startMatch("Arsenal FC", "Ajax");
+        scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2);
+        scoreboard.startMatch("Real Madrid", "Liverpool FC");
+        List<Match> summary = scoreboard.getSummary();
+        assertEquals(2, summary.size());
+        scoreboard.finishMatch("Arsenal FC", "Ajax");
+        assertEquals(1, summary.size());
+    }
+
+    @Test
+    public void testScoreboardFinishAlreadyFinishedMatch() {
+        Scoreboard scoreboard = new Scoreboard();
+        scoreboard.startMatch("Arsenal FC", "Ajax");
+        scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2);
+        scoreboard.finishMatch("Arsenal FC", "Ajax");
+
+        assertThrows(MatchNotFoundException.class,
+                () -> scoreboard.finishMatch("Arsenal FC", "Ajax"));
+    }
+
+    @Test
+    public void testEmptyScoreboardReturnsEmptySummary() {
+        Scoreboard scoreboard = new Scoreboard();
+        List<Match> summary = scoreboard.getSummary();
+        assertEquals(0, summary.size());
+    }
+
+    @Test
+    public void testScoreboardStartMatchBasic() {
+        Scoreboard scoreboard = new Scoreboard();
+        scoreboard.startMatch("Arsenal FC", "Ajax");
+        List<Match> summary = scoreboard.getSummary();
+        assertEquals(1, summary.size());
+    }
+
+    @Test
+    public void testScoreboardStartMatch() {
+        Scoreboard scoreboard = new Scoreboard();
+        scoreboard.startMatch("Arsenal FC", "Ajax");
+        List<Match> summary = scoreboard.getSummary();
+        assertEquals("Arsenal FC", summary.get(0).getHomeTeam());
+        assertEquals("Ajax", summary.get(0).getAwayTeam());
+        assertEquals(0, summary.get(0).getHomeScore());
+        assertEquals(0, summary.get(0).getAwayScore());
+    }
+
+    @Test
+    public void testScoreboardStartAndUpdateMatch() {
+        Scoreboard scoreboard = new Scoreboard();
+        scoreboard.startMatch("Arsenal FC", "Ajax");
+        scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2);
+        List<Match> summary = scoreboard.getSummary();
+        assertEquals(1, summary.get(0).getHomeScore());
+        assertEquals(2, summary.get(0).getAwayScore());
+    }
+
+    @Test
+    public void testScoreboardStartAndUpdateMatch2() {
+        Scoreboard scoreboard = new Scoreboard();
+
+        scoreboard.startMatch("Real Madrid", "Liverpool FC");
+        scoreboard.startMatch("Arsenal FC", "Ajax");
+
+        scoreboard.updateScore("Real Madrid", "Liverpool FC", 1, 2);
+        scoreboard.updateScore("Arsenal FC", "Ajax", 3, 2);
+        List<Match> summary = scoreboard.getSummary();
+
+        for (Match match : summary){
+            if(match.getHomeTeam().equals("Arsenal FC")){
+                assertEquals(3, match.getHomeScore());
+                assertEquals(2, match.getAwayScore());
+            }
+        }
+    }
+
 }
