@@ -6,6 +6,7 @@ import org.ozanercan.Exceptions.DuplicateMatchFoundException;
 import org.ozanercan.Exceptions.MatchNotFoundException;
 import org.ozanercan.Repository.IMatchRepository;
 import org.ozanercan.Repository.MatchRepositoryImpl;
+import org.ozanercan.Service.IMatchService;
 import org.ozanercan.Service.MatchService;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,11 +15,14 @@ import java.util.List;
 
 public class AppTest {
     private Scoreboard scoreboard;
+    private IMatchRepository matchRepository;
+    private IMatchService matchService;
 
     @BeforeEach
     public void setUp() {
-        IMatchRepository matchRepository = new MatchRepositoryImpl();
-        scoreboard = new Scoreboard(new MatchService(matchRepository));
+        matchRepository = new MatchRepositoryImpl();
+        matchService = new MatchService(matchRepository);
+        scoreboard = new Scoreboard(matchService);
     }
 
     @Test

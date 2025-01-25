@@ -1,13 +1,13 @@
 package org.ozanercan;
 
-import org.ozanercan.Service.MatchService;
+import org.ozanercan.Service.IMatchService;
 
 import java.util.List;
 
 public class Scoreboard {
-    private MatchService matchService;
+    private IMatchService matchService;
 
-    public Scoreboard(MatchService matchService) {
+    public Scoreboard(IMatchService matchService) {
         this.matchService = matchService;
     }
 
