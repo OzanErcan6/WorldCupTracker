@@ -1,6 +1,8 @@
 package org.ozanercan;
 
 import org.junit.jupiter.api.Test;
+import org.ozanercan.Exceptions.MatchNotFoundException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
@@ -41,6 +43,33 @@ public class AppTest {
         List<Match> summary = scoreboard.getSummary();
         assertEquals(1, summary.get(0).getHomeScore());
         assertEquals(2, summary.get(0).getAwayScore());
+    }
+
+    @Test
+    public void testScoreboardStartAndUpdateMatch2() {
+        Scoreboard scoreboard = new Scoreboard();
+
+        scoreboard.startMatch("Real Madrid", "Liverpool FC");
+        scoreboard.startMatch("Arsenal FC", "Ajax");
+
+        scoreboard.updateScore("Real Madrid", "Liverpool FC", 1, 2);
+        scoreboard.updateScore("Arsenal FC", "Ajax", 3, 2);
+        List<Match> summary = scoreboard.getSummary();
+
+        for (Match match : summary){
+            if(match.getHomeTeam().equals("Arsenal FC")){
+                assertEquals(3, summary.get(1).getHomeScore());
+                assertEquals(2, summary.get(1).getAwayScore());
+            }
+        }
+    }
+
+    @Test
+    public void testScoreboardStartAndUpdateNonExistsMatch() {
+        Scoreboard scoreboard = new Scoreboard();
+        scoreboard.startMatch("Arsenal FC", "Ajax");
+        assertThrows(MatchNotFoundException.class,
+                () -> scoreboard.updateScore("NE Team1", "NE Team2", 1, 2));
     }
 
 

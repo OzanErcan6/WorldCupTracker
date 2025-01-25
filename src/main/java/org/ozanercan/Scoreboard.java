@@ -1,5 +1,7 @@
 package org.ozanercan;
 
+import org.ozanercan.Exceptions.MatchNotFoundException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +16,17 @@ public class Scoreboard {
     }
 
     public void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore) {
-        matchesInProgress.get(0).setHomeScore(homeScore);
-        matchesInProgress.get(0).setAwayScore(awayScore);
+        Match match = this.findMatchWithTeamNames(homeTeam, awayTeam);
+
+        match.setHomeScore(homeScore);
+        match.setAwayScore(awayScore);
+    }
+
+    private Match findMatchWithTeamNames(String homeTeam, String awayTeam) {
+        for(Match match : matchesInProgress)
+            if(match.getHomeTeam().equals(homeTeam) && match.getAwayTeam().equals(awayTeam))
+                return match;
+
+        throw new MatchNotFoundException("Match between " + homeTeam + " and " + awayTeam + " does not exist.");
     }
 }
