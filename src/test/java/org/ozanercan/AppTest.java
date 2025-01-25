@@ -4,8 +4,10 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import java.util.List;
 
-public class AppTest 
+
+public class AppTest
     extends TestCase
 {
 
@@ -19,8 +21,15 @@ public class AppTest
         return new TestSuite( AppTest.class );
     }
 
-    public void testApp()
-    {
-        assertTrue( true );
+    public void testEmptyScoreboardReturnsEmptySummary() {
+        Scoreboard scoreboard = new Scoreboard();
+        List<Match> summary = scoreboard.getSummary();
+        assertEquals(0, summary.size());
+    }
+
+    public void testMatchTotalScore(){
+        Match match = new Match("Real Madrid", "Liverpool FC");
+        match.updateScore(3,3);
+        assertEquals(6, match.getTotalScore());
     }
 }
