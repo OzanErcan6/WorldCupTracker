@@ -1,15 +1,17 @@
 package org.ozanercan;
 
-public class Match {
+public class Match implements Comparable<Match>{
     String homeTeam;
     String awayTeam;
     int homeScore = 0;
     int awayScore = 0;
+    int matchOrder;
 
-    public Match(String homeTeam, String awayTeam) {
+    public Match(String homeTeam, String awayTeam, int matchOrder) {
         Util.validateTeamNames(homeTeam,awayTeam);
         this.homeTeam = homeTeam;
         this.awayTeam = awayTeam;
+        this.matchOrder = matchOrder;
     }
 
     public void updateScore(int homeScore, int awayScore) {
@@ -53,5 +55,15 @@ public class Match {
 
     public void setAwayScore(int awayScore) {
         this.awayScore = awayScore;
+    }
+
+    @Override
+    public int compareTo(Match otherMatch) {
+        int scoreDiff = Integer.compare(otherMatch.getTotalScore(), this.getTotalScore());
+        if (scoreDiff != 0) {
+            return scoreDiff;
+        }
+
+        return Integer.compare(otherMatch.matchOrder, this.matchOrder);
     }
 }

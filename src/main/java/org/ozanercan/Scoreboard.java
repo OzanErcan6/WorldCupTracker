@@ -8,15 +8,17 @@ import java.util.List;
 
 public class Scoreboard {
     List<Match> matchesInProgress = new ArrayList<>();
+    private static int matchCounter = 0;
+
     public List<Match> getSummary() {
-        return matchesInProgress;
+        return matchesInProgress.stream().sorted().toList();
     }
 
     public void startMatch(String homeTeam, String awayTeam) {
         Util.validateTeamNames(homeTeam, awayTeam);
 
         this.checkIfAtLeastOneTeamsIsInProgress(homeTeam, awayTeam);
-        matchesInProgress.add(new Match(homeTeam,awayTeam));
+        matchesInProgress.add(new Match(homeTeam,awayTeam,matchCounter++));
     }
 
     private void checkIfAtLeastOneTeamsIsInProgress(String homeTeam, String awayTeam) {
