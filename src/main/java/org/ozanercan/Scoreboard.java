@@ -1,5 +1,6 @@
 package org.ozanercan;
 
+import org.ozanercan.Exceptions.DuplicateMatchFoundException;
 import org.ozanercan.Exceptions.MatchNotFoundException;
 
 import java.util.ArrayList;
@@ -12,7 +13,19 @@ public class Scoreboard {
     }
 
     public void startMatch(String homeTeam, String awayTeam) {
+        Util.validateTeamNames(homeTeam, awayTeam);
+
+        this.checkIfAtLeastOneTeamsIsInProgress(homeTeam, awayTeam);
         matchesInProgress.add(new Match(homeTeam,awayTeam));
+    }
+
+    private void checkIfAtLeastOneTeamsIsInProgress(String homeTeam, String awayTeam) {
+        for(Match match : matchesInProgress){
+            if(match.getHomeTeam().equals(homeTeam) || match.getHomeTeam().equals(awayTeam)
+                    || match.getAwayTeam().equals(homeTeam) || match.getAwayTeam().equals(awayTeam)){
+                throw new DuplicateMatchFoundException("One or both teams are already in progress");
+            }
+        }
     }
 
     public void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore) {

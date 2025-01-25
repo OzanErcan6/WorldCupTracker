@@ -7,8 +7,7 @@ public class Match {
     int awayScore = 0;
 
     public Match(String homeTeam, String awayTeam) {
-        if(homeTeam.isEmpty() || awayTeam.isEmpty())
-            throw new IllegalArgumentException("Team name cannot be empty.");
+        Util.validateTeamNames(homeTeam,awayTeam);
         this.homeTeam = homeTeam;
         this.awayTeam = awayTeam;
     }

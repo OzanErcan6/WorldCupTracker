@@ -1,6 +1,7 @@
 package org.ozanercan;
 
 import org.junit.jupiter.api.Test;
+import org.ozanercan.Exceptions.DuplicateMatchFoundException;
 import org.ozanercan.Exceptions.MatchNotFoundException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,6 +37,28 @@ public class AppTest {
     }
 
     @Test
+    public void testScoreboardStartMatchDuplicateValue() {
+        Scoreboard scoreboard = new Scoreboard();
+        scoreboard.startMatch("Arsenal FC", "Ajax");
+        assertThrows(DuplicateMatchFoundException.class,
+                () -> scoreboard.startMatch("Arsenal FC", "Real Madrid"));
+    }
+
+    @Test
+    public void testScoreboardStartMatchNullOrWhitespaceName() {
+        Scoreboard scoreboard = new Scoreboard();
+        assertThrows(IllegalArgumentException.class,
+                () -> scoreboard.startMatch(null, "Real Madrid"));
+    }
+
+    @Test
+    public void testScoreboardStartMatchSameTeams() {
+        Scoreboard scoreboard = new Scoreboard();
+        assertThrows(IllegalArgumentException.class,
+                () -> scoreboard.startMatch("Real Madrid", "Real Madrid"));
+    }
+
+    @Test
     public void testScoreboardStartAndUpdateMatch() {
         Scoreboard scoreboard = new Scoreboard();
         scoreboard.startMatch("Arsenal FC", "Ajax");
@@ -58,10 +81,17 @@ public class AppTest {
 
         for (Match match : summary){
             if(match.getHomeTeam().equals("Arsenal FC")){
-                assertEquals(3, summary.get(1).getHomeScore());
-                assertEquals(2, summary.get(1).getAwayScore());
+                assertEquals(3, match.getHomeScore());
+                assertEquals(2, match.getAwayScore());
             }
         }
+    }
+
+    @Test
+    public void testScoreboardNotStartedMatchUpdateScore() {
+        Scoreboard scoreboard = new Scoreboard();
+        assertThrows(MatchNotFoundException.class,
+                () -> scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2));
     }
 
     @Test
