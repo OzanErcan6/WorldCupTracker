@@ -1,11 +1,11 @@
 package org.ozanercan;
 
 public class Match implements Comparable<Match>{
-    String homeTeam;
-    String awayTeam;
-    int homeScore = 0;
-    int awayScore = 0;
-    int matchOrder;
+    private String homeTeam;
+    private String awayTeam;
+    private int homeScore = 0;
+    private int awayScore = 0;
+    private int matchOrder;
 
     public Match(String homeTeam, String awayTeam, int matchOrder) {
         Util.validateTeamNames(homeTeam,awayTeam);

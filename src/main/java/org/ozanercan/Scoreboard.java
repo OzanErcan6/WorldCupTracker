@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Scoreboard {
-    List<Match> matchesInProgress = new ArrayList<>();
+    private List<Match> matchesInProgress = new ArrayList<>();
     private static int matchCounter = 0;
 
     public List<Match> getSummary() {

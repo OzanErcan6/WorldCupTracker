@@ -1,5 +1,6 @@
 package org.ozanercan;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.ozanercan.Exceptions.DuplicateMatchFoundException;
 import org.ozanercan.Exceptions.MatchNotFoundException;
@@ -9,10 +10,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 
 public class AppTest {
+    private Scoreboard scoreboard;
+
+    @BeforeEach
+    public void setUp() {
+        scoreboard = new Scoreboard();
+    }
 
     @Test
     public void testScoreboardStartMatchDuplicateValue() {
-        Scoreboard scoreboard = new Scoreboard();
         scoreboard.startMatch("Arsenal FC", "Ajax");
         assertThrows(DuplicateMatchFoundException.class,
                 () -> scoreboard.startMatch("Arsenal FC", "Real Madrid"));
@@ -20,28 +26,24 @@ public class AppTest {
 
     @Test
     public void testScoreboardStartMatchNullOrWhitespaceName() {
-        Scoreboard scoreboard = new Scoreboard();
         assertThrows(IllegalArgumentException.class,
                 () -> scoreboard.startMatch(null, "Real Madrid"));
     }
 
     @Test
     public void testScoreboardStartMatchSameTeams() {
-        Scoreboard scoreboard = new Scoreboard();
         assertThrows(IllegalArgumentException.class,
                 () -> scoreboard.startMatch("Real Madrid", "Real Madrid"));
     }
 
     @Test
     public void testScoreboardNotStartedMatchUpdateScore() {
-        Scoreboard scoreboard = new Scoreboard();
         assertThrows(MatchNotFoundException.class,
                 () -> scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2));
     }
 
     @Test
     public void testScoreboardStartAndUpdateNonExistsMatch() {
-        Scoreboard scoreboard = new Scoreboard();
         scoreboard.startMatch("Arsenal FC", "Ajax");
         assertThrows(MatchNotFoundException.class,
                 () -> scoreboard.updateScore("NE Team1", "NE Team2", 1, 2));
@@ -49,7 +51,6 @@ public class AppTest {
 
     @Test
     public void testScoreboardStartAndUpdateNegativeScore() {
-        Scoreboard scoreboard = new Scoreboard();
         scoreboard.startMatch("Arsenal FC", "Ajax");
         assertThrows(IllegalArgumentException.class,
                 () -> scoreboard.updateScore("Arsenal FC", "Ajax", -1, -2));
@@ -57,7 +58,6 @@ public class AppTest {
 
     @Test
     public void testScoreboardStartAndUpdateNonExistentTeamNegativeScore() {
-        Scoreboard scoreboard = new Scoreboard();
         scoreboard.startMatch("Arsenal FC", "Ajax");
         assertThrows(IllegalArgumentException.class,
                 () -> scoreboard.updateScore("NE Team", "Ajax", -1, -2));
@@ -91,7 +91,6 @@ public class AppTest {
 
     @Test
     public void testScoreboardFinishMatchWithIllegalNames() {
-        Scoreboard scoreboard = new Scoreboard();
         scoreboard.startMatch("Arsenal FC", "Ajax");
         scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2);
 
@@ -103,7 +102,6 @@ public class AppTest {
 
     @Test
     public void testScoreboardFinishMatchWithNoException() {
-        Scoreboard scoreboard = new Scoreboard();
         scoreboard.startMatch("Arsenal FC", "Ajax");
         scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2);
         scoreboard.finishMatch("Arsenal FC", "Ajax");
@@ -111,7 +109,6 @@ public class AppTest {
 
     @Test
     public void testScoreboardFinishNonExistedMatch() {
-        Scoreboard scoreboard = new Scoreboard();
         scoreboard.startMatch("Arsenal FC", "Ajax");
         scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2);
 
@@ -121,7 +118,6 @@ public class AppTest {
 
     @Test
     public void testScoreboardUpdateAlreadyFinishedMatch() {
-        Scoreboard scoreboard = new Scoreboard();
         scoreboard.startMatch("Arsenal FC", "Ajax");
         scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2);
         scoreboard.finishMatch("Arsenal FC", "Ajax");
@@ -132,7 +128,6 @@ public class AppTest {
 
     @Test
     public void testScoreboardSummaryBasicCase() {
-        Scoreboard scoreboard = new Scoreboard();
         scoreboard.startMatch("Arsenal FC", "Ajax");
         scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2);
         List<Match> summary = scoreboard.getSummary();
@@ -144,7 +139,6 @@ public class AppTest {
 
     @Test
     public void testScoreboardSummaryBasicCase2() {
-        Scoreboard scoreboard = new Scoreboard();
         scoreboard.startMatch("Arsenal FC", "Ajax");
         scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2);
         scoreboard.startMatch("Real Madrid", "Liverpool FC");
@@ -157,7 +151,6 @@ public class AppTest {
 
     @Test
     public void testScoreboardFinishAlreadyFinishedMatch() {
-        Scoreboard scoreboard = new Scoreboard();
         scoreboard.startMatch("Arsenal FC", "Ajax");
         scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2);
         scoreboard.finishMatch("Arsenal FC", "Ajax");
@@ -168,14 +161,12 @@ public class AppTest {
 
     @Test
     public void testEmptyScoreboardReturnsEmptySummary() {
-        Scoreboard scoreboard = new Scoreboard();
         List<Match> summary = scoreboard.getSummary();
         assertEquals(0, summary.size());
     }
 
     @Test
     public void testScoreboardStartMatchBasic() {
-        Scoreboard scoreboard = new Scoreboard();
         scoreboard.startMatch("Arsenal FC", "Ajax");
         List<Match> summary = scoreboard.getSummary();
         assertEquals(1, summary.size());
@@ -183,7 +174,6 @@ public class AppTest {
 
     @Test
     public void testScoreboardStartMatch() {
-        Scoreboard scoreboard = new Scoreboard();
         scoreboard.startMatch("Arsenal FC", "Ajax");
         List<Match> summary = scoreboard.getSummary();
         assertEquals("Arsenal FC", summary.get(0).getHomeTeam());
@@ -194,7 +184,6 @@ public class AppTest {
 
     @Test
     public void testScoreboardStartAndUpdateMatch() {
-        Scoreboard scoreboard = new Scoreboard();
         scoreboard.startMatch("Arsenal FC", "Ajax");
         scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2);
         List<Match> summary = scoreboard.getSummary();
@@ -204,8 +193,6 @@ public class AppTest {
 
     @Test
     public void testScoreboardStartAndUpdateMatch2() {
-        Scoreboard scoreboard = new Scoreboard();
-
         scoreboard.startMatch("Real Madrid", "Liverpool FC");
         scoreboard.startMatch("Arsenal FC", "Ajax");
 
@@ -223,8 +210,6 @@ public class AppTest {
 
     @Test
     public void testScoreboard() {
-        Scoreboard scoreboard = new Scoreboard();
-
         scoreboard.startMatch("Real Madrid", "Liverpool FC");
         scoreboard.startMatch("Arsenal FC", "Ajax");
 
@@ -242,8 +227,6 @@ public class AppTest {
 
     @Test
     public void testScoreboardSummaryWithMultipleMatchesBasic() {
-        Scoreboard scoreboard = new Scoreboard();
-
         scoreboard.startMatch("Mexico", "Canada");
         scoreboard.startMatch("Spain", "Brazil");
 
@@ -265,8 +248,6 @@ public class AppTest {
 
     @Test
     public void testScoreboardSummaryWithMultipleMatchesAdvanced() {
-        Scoreboard scoreboard = new Scoreboard();
-
         scoreboard.startMatch("Mexico", "Canada");
         scoreboard.startMatch("Spain", "Brazil");
         scoreboard.startMatch("Germany", "France");
