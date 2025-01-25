@@ -29,6 +29,7 @@ public class Scoreboard {
     }
 
     public void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore) {
+        Util.checkIfScoresAreValidOtherwiseThrowException(homeScore,awayScore);
         Match match = this.findMatchWithTeamNames(homeTeam, awayTeam);
 
         match.setHomeScore(homeScore);
@@ -42,4 +43,12 @@ public class Scoreboard {
 
         throw new MatchNotFoundException("Match between " + homeTeam + " and " + awayTeam + " does not exist.");
     }
+
+    public void finishMatch(String homeTeam, String awayTeam) {
+        Util.validateTeamNames(homeTeam, awayTeam);
+        Match match = this.findMatchWithTeamNames(homeTeam, awayTeam); // check if
+
+        matchesInProgress.remove(match);
+    }
+
 }

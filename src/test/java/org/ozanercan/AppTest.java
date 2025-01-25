@@ -102,6 +102,22 @@ public class AppTest {
                 () -> scoreboard.updateScore("NE Team1", "NE Team2", 1, 2));
     }
 
+    @Test
+    public void testScoreboardStartAndUpdateNegativeScore() {
+        Scoreboard scoreboard = new Scoreboard();
+        scoreboard.startMatch("Arsenal FC", "Ajax");
+        assertThrows(IllegalArgumentException.class,
+                () -> scoreboard.updateScore("Arsenal FC", "Ajax", -1, -2));
+    }
+
+    @Test
+    public void testScoreboardStartAndUpdateNonExistentTeamNegativeScore() {
+        Scoreboard scoreboard = new Scoreboard();
+        scoreboard.startMatch("Arsenal FC", "Ajax");
+        assertThrows(IllegalArgumentException.class,
+                () -> scoreboard.updateScore("NE Team", "Ajax", -1, -2));
+    }
+
 
     @Test
     public void testMatchTotalScore(){
@@ -126,5 +142,46 @@ public class AppTest {
     @Test
     public void testMatchTeamNameCannotBeEmpty() {
         assertThrows(IllegalArgumentException.class, () -> new Match("", "Liverpool FC"));
+    }
+
+    @Test
+    public void testScoreboardFinishMatchWithIllegalNames() {
+        Scoreboard scoreboard = new Scoreboard();
+        scoreboard.startMatch("Arsenal FC", "Ajax");
+        scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> scoreboard.finishMatch("", "Ajax"));
+        assertThrows(IllegalArgumentException.class,
+                () -> scoreboard.finishMatch(null, "Ajax"));
+    }
+
+    @Test
+    public void testScoreboardFinishMatchWithNoException() {
+        Scoreboard scoreboard = new Scoreboard();
+        scoreboard.startMatch("Arsenal FC", "Ajax");
+        scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2);
+        scoreboard.finishMatch("Arsenal FC", "Ajax");
+    }
+
+    @Test
+    public void testScoreboardFinishNonExistedMatch() {
+        Scoreboard scoreboard = new Scoreboard();
+        scoreboard.startMatch("Arsenal FC", "Ajax");
+        scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2);
+
+        assertThrows(MatchNotFoundException.class,
+                () -> scoreboard.finishMatch("team1", "team2"));
+    }
+
+    @Test
+    public void testScoreboardUpdateAlreadyFinishedMatch() {
+        Scoreboard scoreboard = new Scoreboard();
+        scoreboard.startMatch("Arsenal FC", "Ajax");
+        scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2);
+        scoreboard.finishMatch("Arsenal FC", "Ajax");
+
+        assertThrows(MatchNotFoundException.class,
+                () -> scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2));
     }
 }
