@@ -3,11 +3,11 @@ package org.ozanercan;
 import org.ozanercan.Exceptions.DuplicateMatchFoundException;
 import org.ozanercan.Repository.IMatchRepository;
 
-public class Util {
+public class MatchValidator {
     private static final int MAX_TEAM_NAME_LENGTH = 50;
     private static final String TEAM_NAME_REGEX = "^[a-zA-Z0-9\\s'-]+$";
 
-    public static void validateTeams(String homeTeam, String awayTeam, IMatchRepository matchRepository) {
+    public static void checkForDuplicateTeamsInProgress(String homeTeam, String awayTeam, IMatchRepository matchRepository) {
         for (Match match : matchRepository.getAllMatches()) {
             if (match.getHomeTeam().equals(homeTeam) || match.getHomeTeam().equals(awayTeam)
                     || match.getAwayTeam().equals(homeTeam) || match.getAwayTeam().equals(awayTeam)) {
@@ -16,14 +16,14 @@ public class Util {
         }
     }
 
-    public static void validateTeamNames(String homeTeam, String awayTeam) {
-        validateTeamName(homeTeam);
-        validateTeamName(awayTeam);
+    public static void checkForValidTeamNames(String homeTeam, String awayTeam) {
+        checkForValidTeamName(homeTeam);
+        checkForValidTeamName(awayTeam);
         if(homeTeam.equals(awayTeam))
             throw new IllegalArgumentException("Team names cannot be same.");
     }
 
-    public static void validateTeamName(String teamName){
+    public static void checkForValidTeamName(String teamName){
         if (teamName == null || teamName.trim().isEmpty()) {
             throw new IllegalArgumentException("Team name cannot be null or empty.");
         }

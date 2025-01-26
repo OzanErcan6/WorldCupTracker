@@ -8,7 +8,7 @@ import java.util.List;
 
 
 public class MatchRepository implements IMatchRepository {
-    private List<Match> matchesInProgress = new ArrayList<>();
+    private final List<Match> matchesInProgress = new ArrayList<>();
 
     @Override
     public void addMatch(Match match) {
