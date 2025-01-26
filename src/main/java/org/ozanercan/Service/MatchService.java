@@ -1,5 +1,7 @@
 package org.ozanercan.Service;
 
+import org.ozanercan.Exceptions.DuplicateMatchFoundException;
+import org.ozanercan.Exceptions.MatchNotFoundException;
 import org.ozanercan.Match;
 import org.ozanercan.Repository.IMatchRepository;
 import org.ozanercan.MatchValidator;
@@ -16,30 +18,49 @@ public class MatchService implements IMatchService{
 
     @Override
     public void startMatch(String homeTeam, String awayTeam) {
-        MatchValidator.checkForValidTeamNames(homeTeam, awayTeam);
-        MatchValidator.checkForDuplicateTeamsInProgress(homeTeam, awayTeam, matchRepository);
+        try {
+            MatchValidator.checkForValidTeamNames(homeTeam, awayTeam);
+            MatchValidator.checkForDuplicateTeamsInProgress(homeTeam, awayTeam, matchRepository);
 
-        matchRepository.addMatch(new Match(homeTeam, awayTeam, matchCounter++));
+            matchRepository.addMatch(new Match(homeTeam, awayTeam, matchCounter++));
+        } catch (DuplicateMatchFoundException | IllegalArgumentException e) {
+            System.err.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Unexpected error: " + e.getMessage());
+        }
     }
+
 
     @Override
     public void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore) {
-        MatchValidator.checkIfScoresAreValidOtherwiseThrowException(homeScore, awayScore);
-        MatchValidator.checkForValidTeamNames(homeTeam,awayTeam);
-        Match match = matchRepository.findMatch(homeTeam, awayTeam);
-        match.setHomeScore(homeScore);
-        match.setAwayScore(awayScore);
+        try {
+            MatchValidator.checkIfScoresAreValidOtherwiseThrowException(homeScore, awayScore);
+            MatchValidator.checkForValidTeamNames(homeTeam, awayTeam);
+            Match match = matchRepository.findMatch(homeTeam, awayTeam);
+            match.setHomeScore(homeScore);
+            match.setAwayScore(awayScore);
+        } catch (MatchNotFoundException | IllegalArgumentException e) {
+            System.err.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Unexpected error: " + e.getMessage());
+        }
     }
 
     @Override
     public void finishMatch(String homeTeam, String awayTeam) {
-        MatchValidator.checkForValidTeamNames(homeTeam,awayTeam);
-        Match match = matchRepository.findMatch(homeTeam, awayTeam);
-        matchRepository.removeMatch(match);
+        try {
+            MatchValidator.checkForValidTeamNames(homeTeam, awayTeam);
+            Match match = matchRepository.findMatch(homeTeam, awayTeam);
+            matchRepository.removeMatch(match);
+        } catch (MatchNotFoundException | IllegalArgumentException e) {
+            System.err.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Unexpected error: " + e.getMessage());
+        }
     }
 
     @Override
     public List<Match> getSummary() {
-        return matchRepository.getAllMatches();
+        return matchRepository.getAllMatches().stream().sorted().toList();
     }
 }

@@ -25,7 +25,7 @@ public class MatchRepository implements IMatchRepository {
 
     @Override
     public List<Match> getAllMatches() {
-        return matchesInProgress.stream().sorted().toList();
+        return matchesInProgress;
     }
 
     @Override

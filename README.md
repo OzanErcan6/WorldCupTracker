@@ -9,13 +9,11 @@ A Java library to manage live sports match scores, validate inputs, and provide 
 
 ## Usage
 ### Setup
-Ensure JAVA_HOME is set to your JDK 21
+Ensure JAVA_HOME is set to your JDK 21.
 ```java
-mvn clean package
-        
-java -jar target/WorldCupTracker-1.0-SNAPSHOT.jar
-        
-mvn test
+git clone https://github.com/OzanErcan6/WorldCupTracker.git
+
+Open the project with your favorite IDE (Intellij IDEA, Eclipse etc.)
 ```
 
 ### Basic Operations

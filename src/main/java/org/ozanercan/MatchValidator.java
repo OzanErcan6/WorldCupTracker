@@ -40,12 +40,13 @@ public class MatchValidator {
     }
 
     public static void checkIfScoresAreValidOtherwiseThrowException(int homeScore, int awayScore) {
-        if (homeScore < 0) {
-            throw new IllegalArgumentException("Home score cannot be negative: " + homeScore);
-        }
+        checkIfScoreIsValid(homeScore, "Home");
+        checkIfScoreIsValid(awayScore, "Away");
+    }
 
-        if (awayScore < 0) {
-            throw new IllegalArgumentException("Away score cannot be negative: " + awayScore);
+    public static void checkIfScoreIsValid(int score, String team) {
+        if (score < 0) {
+            throw new IllegalArgumentException(team + " score cannot be negative: " + score);
         }
     }
 

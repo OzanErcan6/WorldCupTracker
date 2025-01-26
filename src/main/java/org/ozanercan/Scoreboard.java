@@ -5,7 +5,7 @@ import org.ozanercan.Service.IMatchService;
 import java.util.List;
 
 public class Scoreboard {
-    private IMatchService matchService;
+    private final IMatchService matchService;
 
     public Scoreboard(IMatchService matchService) {
         this.matchService = matchService;
@@ -24,6 +24,6 @@ public class Scoreboard {
     }
 
     public List<Match> getSummary() {
-        return matchService.getSummary().stream().sorted().toList();
+        return matchService.getSummary();
     }
 }

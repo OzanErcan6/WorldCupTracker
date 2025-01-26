@@ -2,8 +2,6 @@ package org.ozanercan;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.ozanercan.Exceptions.DuplicateMatchFoundException;
-import org.ozanercan.Exceptions.MatchNotFoundException;
 import org.ozanercan.Repository.IMatchRepository;
 import org.ozanercan.Repository.MatchRepository;
 import org.ozanercan.Service.IMatchService;
@@ -11,64 +9,77 @@ import org.ozanercan.Service.MatchService;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.List;
 
 public class AppTest {
     private Scoreboard scoreboard;
     private IMatchRepository matchRepository;
     private IMatchService matchService;
+    private ByteArrayOutputStream errorOutput;
 
     @BeforeEach
     public void setUp() {
         matchRepository = new MatchRepository();
         matchService = new MatchService(matchRepository);
         scoreboard = new Scoreboard(matchService);
+
+        errorOutput = new ByteArrayOutputStream();
+        System.setErr(new PrintStream(errorOutput));
     }
 
     @Test
     public void testScoreboardStartMatchDuplicateValue() {
         scoreboard.startMatch("Arsenal FC", "Ajax");
-        assertThrows(DuplicateMatchFoundException.class,
-                () -> scoreboard.startMatch("Arsenal FC", "Real Madrid"));
+        scoreboard.startMatch("Arsenal FC", "Real Madrid");
+
+        assertTrue(errorOutput.toString().contains("Error: One or both teams are already in progress"));
     }
 
     @Test
     public void testScoreboardStartMatchNullOrWhitespaceName() {
-        assertThrows(IllegalArgumentException.class,
-                () -> scoreboard.startMatch(null, "Real Madrid"));
+        scoreboard.startMatch(null, "Real Madrid");
+
+        assertTrue(errorOutput.toString().contains("Error: Team name cannot be null or empty."));
     }
 
     @Test
     public void testScoreboardStartMatchSameTeams() {
-        assertThrows(IllegalArgumentException.class,
-                () -> scoreboard.startMatch("Real Madrid", "Real Madrid"));
+        scoreboard.startMatch("Real Madrid", "Real Madrid");
+
+        assertTrue(errorOutput.toString().contains("Error: Team names cannot be same."));
     }
 
     @Test
     public void testScoreboardNotStartedMatchUpdateScore() {
-        assertThrows(MatchNotFoundException.class,
-                () -> scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2));
+        scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2);
+
+        assertTrue(errorOutput.toString().contains("Error: Match between Arsenal FC and Ajax does not exist."));
     }
 
     @Test
     public void testScoreboardStartAndUpdateNonExistsMatch() {
         scoreboard.startMatch("Arsenal FC", "Ajax");
-        assertThrows(MatchNotFoundException.class,
-                () -> scoreboard.updateScore("NE Team1", "NE Team2", 1, 2));
+        scoreboard.updateScore("NE Team1", "NE Team2", 1, 2);
+
+        assertTrue(errorOutput.toString().contains("Error: Match between NE Team1 and NE Team2 does not exist."));
     }
 
     @Test
     public void testScoreboardStartAndUpdateNegativeScore() {
         scoreboard.startMatch("Arsenal FC", "Ajax");
-        assertThrows(IllegalArgumentException.class,
-                () -> scoreboard.updateScore("Arsenal FC", "Ajax", -1, -2));
+        scoreboard.updateScore("Arsenal FC", "Ajax", -1, -2);
+
+        assertTrue(errorOutput.toString().contains("Error: Home score cannot be negative: -1"));
     }
 
     @Test
     public void testScoreboardStartAndUpdateNonExistentTeamNegativeScore() {
         scoreboard.startMatch("Arsenal FC", "Ajax");
-        assertThrows(IllegalArgumentException.class,
-                () -> scoreboard.updateScore("NE Team", "Ajax", -1, -2));
+        scoreboard.updateScore("NE Team", "Ajax", -1, -2);
+
+        assertTrue(errorOutput.toString().contains("Error: Home score cannot be negative: -1"));
     }
 
     @Test
@@ -76,10 +87,11 @@ public class AppTest {
         scoreboard.startMatch("Arsenal FC", "Ajax");
         scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2);
 
-        assertThrows(IllegalArgumentException.class,
-                () -> scoreboard.finishMatch("", "Ajax"));
-        assertThrows(IllegalArgumentException.class,
-                () -> scoreboard.finishMatch(null, "Ajax"));
+        scoreboard.finishMatch("", "Ajax");
+        assertTrue(errorOutput.toString().contains("Error: Team name cannot be null or empty."));
+
+        scoreboard.finishMatch(null, "Ajax");
+        assertTrue(errorOutput.toString().contains("Error: Team name cannot be null or empty."));
     }
 
     @Test
@@ -93,9 +105,9 @@ public class AppTest {
     public void testScoreboardFinishNonExistedMatch() {
         scoreboard.startMatch("Arsenal FC", "Ajax");
         scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2);
+        scoreboard.finishMatch("team1", "team2");
 
-        assertThrows(MatchNotFoundException.class,
-                () -> scoreboard.finishMatch("team1", "team2"));
+        assertTrue(errorOutput.toString().contains("Error: Match between team1 and team2 does not exist."));
     }
 
     @Test
@@ -104,8 +116,8 @@ public class AppTest {
         scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2);
         scoreboard.finishMatch("Arsenal FC", "Ajax");
 
-        assertThrows(MatchNotFoundException.class,
-                () -> scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2));
+        scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2);
+        assertTrue(errorOutput.toString().contains("Error: Match between Arsenal FC and Ajax does not exist."));
     }
 
     @Test
@@ -136,9 +148,9 @@ public class AppTest {
         scoreboard.startMatch("Arsenal FC", "Ajax");
         scoreboard.updateScore("Arsenal FC", "Ajax", 1, 2);
         scoreboard.finishMatch("Arsenal FC", "Ajax");
+        scoreboard.finishMatch("Arsenal FC", "Ajax");
 
-        assertThrows(MatchNotFoundException.class,
-                () -> scoreboard.finishMatch("Arsenal FC", "Ajax"));
+        assertTrue(errorOutput.toString().contains("Error: Match between Arsenal FC and Ajax does not exist."));
     }
 
     @Test
@@ -367,50 +379,68 @@ public class AppTest {
     @Test
     public void testUpdateScoreOfStartedMatchWithSwitchedTeamNames() {
         scoreboard.startMatch("Chelsea", "PSG");
-        assertThrows(MatchNotFoundException.class,
-                () -> scoreboard.updateScore("PSG", "Chelsea",1,1));
+        scoreboard.updateScore("PSG", "Chelsea",1,1);
+
+        assertTrue(errorOutput.toString().contains("Error: Match between PSG and Chelsea does not exist."));
     }
 
     @Test
     public void testStartMatchesWithSameTeamInOneRole() {
         scoreboard.startMatch("Chelsea", "Barcelona");
-        assertThrows(DuplicateMatchFoundException.class,
-                () -> scoreboard.startMatch("Chelsea", "Real Madrid"));
-        assertThrows(DuplicateMatchFoundException.class,
-                () -> scoreboard.startMatch( "Real Madrid", "Chelsea"));
-        assertThrows(DuplicateMatchFoundException.class,
-                () -> scoreboard.startMatch("Barcelona", "Real Madrid"));
-        assertThrows(DuplicateMatchFoundException.class,
-                () -> scoreboard.startMatch( "Real Madrid", "Barcelona"));
+        scoreboard.startMatch("Chelsea", "Real Madrid");
+        assertTrue(errorOutput.toString().contains("Error: One or both teams are already in progress"));
+
+        scoreboard.startMatch( "Real Madrid", "Chelsea");
+        assertTrue(errorOutput.toString().contains("Error: One or both teams are already in progress"));
+
+        scoreboard.startMatch("Barcelona", "Real Madrid");
+        assertTrue(errorOutput.toString().contains("Error: One or both teams are already in progress"));
+
+        scoreboard.startMatch( "Real Madrid", "Barcelona");
+        assertTrue(errorOutput.toString().contains("Error: One or both teams are already in progress"));
+
     }
 
     @Test
     public void testUpdateScoreAndFinishMatchWithNullOrEmptyTeamNames() {
         scoreboard.startMatch("Chelsea", "PSG");
-        assertThrows(IllegalArgumentException.class,
-                () -> scoreboard.updateScore(null, "PSG", 1, 1));
-        assertThrows(IllegalArgumentException.class,
-                () -> scoreboard.updateScore("Chelsea", null, 1, 1));
-        assertThrows(IllegalArgumentException.class,
-                () -> scoreboard.updateScore(null, null, 1, 1));
-        assertThrows(IllegalArgumentException.class,
-                () -> scoreboard.finishMatch(null, "PSG"));
-        assertThrows(IllegalArgumentException.class,
-                () -> scoreboard.finishMatch("Chelsea", null));
-        assertThrows(IllegalArgumentException.class,
-                () -> scoreboard.finishMatch(null, null));
-        assertThrows(IllegalArgumentException.class,
-                () -> scoreboard.updateScore("", "PSG", 1, 1));
-        assertThrows(IllegalArgumentException.class,
-                () -> scoreboard.updateScore("Chelsea", "", 1, 1));
-        assertThrows(IllegalArgumentException.class,
-                () -> scoreboard.updateScore("", "", 1, 1));
-        assertThrows(IllegalArgumentException.class,
-                () -> scoreboard.finishMatch("", "PSG"));
-        assertThrows(IllegalArgumentException.class,
-                () -> scoreboard.finishMatch("Chelsea", ""));
-        assertThrows(IllegalArgumentException.class,
-                () -> scoreboard.finishMatch("", ""));
+
+        scoreboard.updateScore(null, "PSG", 1, 1);
+        assertTrue(errorOutput.toString().contains("Error: Team name cannot be null or empty."));
+
+        scoreboard.updateScore("Chelsea", null, 1, 1);
+        assertTrue(errorOutput.toString().contains("Error: Team name cannot be null or empty."));
+
+        scoreboard.updateScore(null, null, 1, 1);
+        assertTrue(errorOutput.toString().contains("Error: Team name cannot be null or empty."));
+
+        scoreboard.updateScore("", "PSG", 1, 1);
+        assertTrue(errorOutput.toString().contains("Error: Team name cannot be null or empty."));
+
+        scoreboard.updateScore("Chelsea", "", 1, 1);
+        assertTrue(errorOutput.toString().contains("Error: Team name cannot be null or empty."));
+
+        scoreboard.updateScore("", "", 1, 1);
+        assertTrue(errorOutput.toString().contains("Error: Team name cannot be null or empty."));
+
+        scoreboard.finishMatch(null, "PSG");
+        assertTrue(errorOutput.toString().contains("Error: Team name cannot be null or empty."));
+
+        scoreboard.finishMatch("Chelsea", null);
+        assertTrue(errorOutput.toString().contains("Error: Team name cannot be null or empty."));
+
+        scoreboard.finishMatch(null, null);
+        assertTrue(errorOutput.toString().contains("Error: Team name cannot be null or empty."));
+
+        scoreboard.finishMatch("", "PSG");
+        assertTrue(errorOutput.toString().contains("Error: Team name cannot be null or empty."));
+
+        scoreboard.finishMatch("Chelsea", "");
+        assertTrue(errorOutput.toString().contains("Error: Team name cannot be null or empty."));
+
+        scoreboard.finishMatch("", "");
+        assertTrue(errorOutput.toString().contains("Error: Team name cannot be null or empty."));
+
     }
 
 
