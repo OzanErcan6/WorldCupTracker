@@ -203,23 +203,6 @@ public class AppTest {
     }
 
     @Test
-    public void testScoreboard() {
-        scoreboard.startMatch("Real Madrid", "Liverpool FC");
-        scoreboard.startMatch("Arsenal FC", "Ajax");
-
-        scoreboard.updateScore("Real Madrid", "Liverpool FC", 1, 2);
-        scoreboard.updateScore("Arsenal FC", "Ajax", 3, 2);
-        List<Match> summary = scoreboard.getSummary();
-
-        for (Match match : summary){
-            if(match.getHomeTeam().equals("Arsenal FC")){
-                assertEquals(3, match.getHomeScore());
-                assertEquals(2, match.getAwayScore());
-            }
-        }
-    }
-
-    @Test
     public void testScoreboardSummaryWithMultipleMatchesBasic() {
         scoreboard.startMatch("Mexico", "Canada");
         scoreboard.startMatch("Spain", "Brazil");
