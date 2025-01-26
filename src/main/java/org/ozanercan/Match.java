@@ -8,17 +8,9 @@ public class Match implements Comparable<Match>{
     private int matchOrder;
 
     public Match(String homeTeam, String awayTeam, int matchOrder) {
-        Util.validateTeamNames(homeTeam,awayTeam);
         this.homeTeam = homeTeam;
         this.awayTeam = awayTeam;
         this.matchOrder = matchOrder;
-    }
-
-    public void updateScore(int homeScore, int awayScore) {
-        if(homeScore < 0 || awayScore <0)
-            throw new IllegalArgumentException("Scores cannot be negative.");
-        this.homeScore = homeScore;
-        this.awayScore = awayScore;
     }
 
     public int getTotalScore() {

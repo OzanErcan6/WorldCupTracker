@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MatchRepositoryImpl implements IMatchRepository {
+public class MatchRepository implements IMatchRepository {
     private List<Match> matchesInProgress = new ArrayList<>();
 
     @Override
